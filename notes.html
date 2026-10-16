@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Notes</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+  <nav class="nav">
+    <a class="brand" href="index.html">Cyber<span>Notes</span></a>
+    <div><a class="link" href="index.html">Home</a><a class="link" href="roadmap.html">Roadmap</a></div>
+  </nav>
+  <div id="page"></div>
+</div>
+
+<script src="courses.js"></script>
+<script>
+const id = new URLSearchParams(location.search).get("id");
+const room = new URLSearchParams(location.search).get("room");
+const c = COURSES[id];
+const page = document.getElementById("page");
+
+if(!c){
+  page.innerHTML = `<div class="detail"><h1>Notes not found</h1><p style="margin-top:8px"><a href="roadmap.html">← Back to roadmap</a></p></div>`;
+}else{
+  document.title = c.title + " · Notes";
+  page.innerHTML = `
+    <div class="crumbs"><a href="roadmap.html">Roadmap</a> / <a href="course.html?id=${id}">${c.title}</a> / Notes</div>
+    <div class="detail">
+      <h1>${c.icon} ${room ? room : c.title + " — Notes"}</h1>
+      ${room ? `<div class="meta">${c.title}</div>` : ""}
+      <div class="block">
+        <div class="placeholder">Notes for this path have not been added yet. The layout of this page will be set up once you describe what it should contain.</div>
+      </div>
+      <div class="row">
+        <a class="btn ghost" href="course.html?id=${id}">← Course details</a>
+        <a class="btn ghost" href="roadmap.html">Roadmap</a>
+      </div>
+    </div>`;
+}
+</script>
+</body>
+</html>

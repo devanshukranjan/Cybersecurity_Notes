@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Course Details</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+  <nav class="nav">
+    <a class="brand" href="index.html">Cyber<span>Notes</span></a>
+    <div><a class="link" href="index.html">Home</a><a class="link" href="roadmap.html">Roadmap</a></div>
+  </nav>
+  <div id="page"></div>
+</div>
+
+<script src="courses.js"></script>
+<script>
+const id = new URLSearchParams(location.search).get("id");
+const c = COURSES[id];
+const page = document.getElementById("page");
+
+function listOrPlaceholder(arr, msg){
+  return arr && arr.length
+    ? `<ul style="padding-left:20px">${arr.map(x=>`<li>${x}</li>`).join("")}</ul>`
+    : `<div class="placeholder">${msg}</div>`;
+}
+
+if(!c){
+  page.innerHTML = `<div class="detail"><h1>Course not found</h1><p style="margin-top:8px"><a href="roadmap.html">← Back to roadmap</a></p></div>`;
+}else{
+  document.title = c.title + " · Course Details";
+
+  const prereqHTML = c.prerequisites
+    ? `<div class="block"><h2>Prerequisites</h2><p>${c.prerequisites}</p></div>` : "";
+
+  const modulesHTML = (c.modules || []).map(m => `
+    <a class="module-link" href="${moduleUrl(id, m)}">
+      <span class="m-ico">${m.icon}</span>
+      <span class="m-txt"><b>${m.title}</b><small>${m.text}</small></span>
+      <span class="m-count">${m.rooms && m.rooms.length ? m.rooms.length + " rooms" : "soon"} ›</span>
+    </a>`).join("");
+
+  // Start button goes to the first room of the first module that has rooms
+  const firstMod = (c.modules || []).find(m => m.rooms && m.rooms.length);
+  const startHref = firstMod ? roomUrl(id, firstMod, firstMod.rooms[0]) : (c.modules ? moduleUrl(id, c.modules[0]) : "roadmap.html");
+
+  const contentHTML = c.modules
+    ? `<div class="block"><h2>Modules (${c.modules.length})</h2>${modulesHTML}</div>`
+    : `<div class="block"><h2>What it contains</h2>${listOrPlaceholder(c.contains, "Contents will be added soon.")}</div>
+       <div class="block"><h2>What we will study</h2>${listOrPlaceholder(c.study, "Topics will be added soon.")}</div>`;
+  page.innerHTML = `
+    <div class="crumbs"><a href="roadmap.html">Roadmap</a> / ${c.track} / ${c.title}</div>
+    <div class="detail">
+      <div class="detail-top">
+        <div class="big">${c.icon}</div>
+        <div>
+          <h1>${c.title}</h1>
+          <div class="meta">${barsHTML(c.level)} ${LEVEL_LABEL[c.level]} · ${c.track} · TryHackMe Path</div>
+        </div>
+      </div>
+
+      <div class="block"><h2>About this path</h2>
+        ${c.summary ? `<p>${c.summary}</p>` : `<div class="placeholder">Description coming soon.</div>`}
+      </div>
+      ${prereqHTML}
+      ${contentHTML}
+
+      <div class="row">
+        <a class="btn" href="${startHref}">Start →</a>
+        <a class="btn ghost" href="roadmap.html">← Back to roadmap</a>
+      </div>
+    </div>`;
+}
+</script>
+</body>
+</html>

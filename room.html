@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Room</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+  <nav class="nav">
+    <a class="brand" href="index.html">Cyber<span>Notes</span></a>
+    <div><a class="link" href="index.html">Home</a><a class="link" href="roadmap.html">Roadmap</a></div>
+  </nav>
+  <div id="page"></div>
+</div>
+
+<script src="courses.js"></script>
+<script>
+/* Task fields (all optional): title, lab:true, notes:"<p>html notes</p>" */
+const q = new URLSearchParams(location.search);
+const id = q.get("id"), mid = q.get("m"), rid = q.get("r");
+const c = COURSES[id];
+const m = getModule(c, mid);
+const r = getRoom(m, rid);
+const page = document.getElementById("page");
+
+if(!r){
+  page.innerHTML = `<div class="detail"><h1>Room not found</h1><p style="margin-top:8px"><a href="roadmap.html">← Back to roadmap</a></p></div>`;
+}else{
+  document.title = r.name + " · Room";
+  const level = r.level || "easy";
+  const meta = [
+    barsHTML(level),
+    r.time ? `⏱ ${r.time}` : ""
+  ].filter(Boolean).join(" · ");
+
+  const tasks = (r.tasks || []).map((t, i) => `
+    <details class="task">
+      <summary>
+        <span class="t-num">Task ${i + 1}</span>
+        <span class="t-title">${t.title}</span>
+        ${t.lab ? `<span class="t-lab" title="Has a lab">🖥️</span>` : ""}
+      </summary>
+      <div class="t-body">
+        ${t.notes || `<div class="placeholder">Notes for this task coming soon.</div>`}
+      </div>
+    </details>`).join("");
+
+  // previous / next room within the same module
+  const idx = m.rooms.indexOf(r);
+  const prev = m.rooms[idx - 1], next = m.rooms[idx + 1];
+
+  page.innerHTML = `
+    <div class="crumbs"><a href="course.html?id=${id}">${c.title}</a> &gt; <a href="${moduleUrl(id, m)}">${m.title}</a> &gt; ${r.name}</div>
+    <div class="detail">
+      <div class="detail-top">
+        <div class="big">${r.icon || m.icon}</div>
+        <div>
+          <h1>${r.name}${r.premium ? ` <span class="badge">★ Premium room</span>` : ""}</h1>
+          <p style="color:var(--muted)">${r.text}</p>
+          <div class="meta">${meta}</div>
+        </div>
+      </div>
+
+      <div class="block"><h2>Tasks</h2>
+        ${tasks || `<div class="placeholder">Tasks and notes for this room will be added soon.</div>`}
+      </div>
+
+      <div class="row">
+        ${prev ? `<a class="btn ghost" href="${roomUrl(id, m, prev)}">← ${prev.name}</a>` : ""}
+        <a class="btn ghost" href="${moduleUrl(id, m)}">Module overview</a>
+        ${next ? `<a class="btn" href="${roomUrl(id, m, next)}">${next.name} →</a>` : ""}
+      </div>
+    </div>`;
+}
+</script>
+</body>
+</html>

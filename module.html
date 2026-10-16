@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Module</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+  <nav class="nav">
+    <a class="brand" href="index.html">Cyber<span>Notes</span></a>
+    <div><a class="link" href="index.html">Home</a><a class="link" href="roadmap.html">Roadmap</a></div>
+  </nav>
+  <div id="page"></div>
+</div>
+
+<script src="courses.js"></script>
+<script>
+const q = new URLSearchParams(location.search);
+const id = q.get("id"), mid = q.get("m");
+const c = COURSES[id];
+const m = getModule(c, mid);
+const page = document.getElementById("page");
+
+if(!m){
+  page.innerHTML = `<div class="detail"><h1>Module not found</h1><p style="margin-top:8px"><a href="roadmap.html">← Back to roadmap</a></p></div>`;
+}else{
+  document.title = m.title + " · Module";
+  const rooms = (m.rooms || []).map((r, i) => `
+    <a class="room-row" href="${roomUrl(id, m, r)}">
+      <span class="r-num">${i + 1}</span>
+      <span class="r-txt"><b>${r.name}</b><small>${r.text}</small></span>
+      <span class="m-count">›</span>
+    </a>`).join("");
+
+  page.innerHTML = `
+    <div class="crumbs"><a href="roadmap.html">Roadmap</a> / <a href="course.html?id=${id}">${c.title}</a> / ${m.title}</div>
+    <div class="detail">
+      <div class="detail-top">
+        <div class="big">${m.icon}</div>
+        <div>
+          <h1>${m.title}</h1>
+          <div class="meta">${c.title} · Module</div>
+        </div>
+      </div>
+      <p>${m.text}</p>
+      ${m.intro ? `<p style="margin-top:14px;color:var(--muted)">${m.intro}</p>` : `<div class="placeholder" style="margin-top:14px">Module overview coming soon.</div>`}
+
+      <div class="block"><h2>Rooms</h2>
+        ${rooms || `<div class="placeholder">Rooms will be added soon.</div>`}
+      </div>
+
+      <div class="row">
+        <a class="btn ghost" href="course.html?id=${id}">← ${c.title}</a>
+      </div>
+    </div>`;
+}
+</script>
+</body>
+</html>

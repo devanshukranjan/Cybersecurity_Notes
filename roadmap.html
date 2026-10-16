@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cyber Security Learning Roadmap</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+  <nav class="nav">
+    <a class="brand" href="index.html">Cyber<span>Notes</span></a>
+    <div><a class="link" href="index.html">Home</a><a class="link" href="roadmap.html">Roadmap</a></div>
+  </nav>
+
+  <div class="page-head">
+    <h1>Cyber Security Learning Roadmap</h1>
+    <p>From fundamental principles to advanced techniques. Click any path to see what it covers and open my notes.</p>
+  </div>
+
+  <div class="road" id="road"></div>
+</div>
+
+<script src="courses.js"></script>
+<script>
+const road = document.getElementById("road");
+let html = "";
+
+FOUNDATION_STAGES.forEach((s, i) => {
+  html += `<div class="stage"><h2>${s.title}</h2><p>${s.text}</p></div>`;
+  if (s.courses.length) {
+    html += `<div class="vline"></div><div class="stack">${s.courses.map(courseCard).join("")}</div><div class="arrow"></div><div style="height:14px"></div>`;
+  }
+});
+
+html += `<div class="vline"></div><div class="fork"><div class="fork-bar"></div><div class="tracks">` +
+  TRACKS.map(t => `
+    <div class="track ${t.cls}">
+      <div class="drop"></div>
+      <h3>${t.name}</h3>
+      <div class="desc">${t.text}</div>
+      <div class="stack">${t.courses.map(courseCard).join("")}</div>
+    </div>`).join("") +
+  `</div></div><div class="vline" style="height:34px"></div><div class="arrow"></div><div class="next">What's next?</div>`;
+
+road.innerHTML = html;
+</script>
+</body>
+</html>
